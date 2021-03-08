@@ -1,6 +1,11 @@
 import React from 'react'
 import Cards from '../components/cards'
 import FormGroup from '../components/form-group'
+import { withRouter } from 'react-router-dom'
+
+import UsuarioService from '../app/service/usuarioService'
+import LocalStorageService from '../app/service/localstorageService'
+import { mensagemErro } from '../components/toastr'
 
 class Login extends React.Component{
 
@@ -9,14 +14,29 @@ class Login extends React.Component{
         senha: ''
     }
 
+    constructor(){
+        super();
+        this.service = new UsuarioService();
+    }
+
     entrar = () => {
-        console.log('Email: ', this.state.email)
-        console.log('Senha: ', this.state.senha)
+        this.service.autenticar({
+            email: this.state.email,
+            senha: this.state.senha
+        }).then( response => {
+            LocalStorageService.adicionarItem('_usuario_logado', response.data)
+            this.props.history.push('/home')
+        }).catch( erro => {
+            mensagemErro(erro.response.data)
+        })
+    }
+
+    prepareCadastrar = () => {
+        this.props.history.push('/cadastro-usuarios')
     }
 
     render(){
         return(
-            <div className="container">
                 <div className="row">
                     <div className="col-md-6" style={ {position : 'relative', left : '300px'} }>
                         <div className="bs-docs-section">
@@ -43,7 +63,7 @@ class Login extends React.Component{
                                                            placeholder="Password" />
                                                </FormGroup>
                                                <button onClick={this.entrar} className="btn btn-success">Entrar</button>
-                                               <button className="btn btn-danger">Cadastrar</button>
+                                               <button onClick={this.prepareCadastrar} className="btn btn-danger">Cadastrar</button>
                                             </fieldset>
                                         </div>
                                     </div>
@@ -52,10 +72,9 @@ class Login extends React.Component{
                         </div>
                     </div>
                 </div>
-            </div>
         )
 
     }
 }
 
-export default Login
+export default withRouter( Login )

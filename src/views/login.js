@@ -20,15 +20,25 @@ class Login extends React.Component{
     }
 
     entrar = () => {
-        this.service.autenticar({
-            email: this.state.email,
-            senha: this.state.senha
-        }).then( response => {
-            LocalStorageService.adicionarItem('_usuario_logado', response.data)
-            this.props.history.push('/home')
-        }).catch( erro => {
-            mensagemErro(erro.response.data)
-        })
+
+        if(!this.state.email && !this.state.senha){
+            mensagemErro("Email e Senha não informados.");
+        }else if (!this.state.email ){
+            mensagemErro("Email não informado.");
+        }else if (!this.state.senha ){
+            mensagemErro("Senha não informada.");
+        }else{
+            this.service.autenticar({
+                email: this.state.email,
+                senha: this.state.senha
+            }).then( response => {
+                LocalStorageService.adicionarItem('_usuario_logado', response.data)
+                this.props.history.push('/home')
+            }).catch( erro => {
+                mensagemErro(erro.response.data)
+            })
+        }
+
     }
 
     prepareCadastrar = () => {
@@ -41,7 +51,7 @@ class Login extends React.Component{
                     <div className="col-md-6" style={ {position : 'relative', left : '300px'} }>
                         <div className="bs-docs-section">
                             <Cards title='Login'>
-                                <div className="row">
+                                <div className="row justify-content-end">
                                     <div className="col-lg-12"> 
                                         <div className="bs-component">
                                             <fieldset>
@@ -62,7 +72,7 @@ class Login extends React.Component{
                                                            id="exampleInputPassword1" 
                                                            placeholder="Password" />
                                                </FormGroup>
-                                               <button onClick={this.entrar} className="btn btn-success">Entrar</button>
+                                               <button onClick={this.entrar} className="btn btn-success mr-1">Entrar</button>
                                                <button onClick={this.prepareCadastrar} className="btn btn-danger">Cadastrar</button>
                                             </fieldset>
                                         </div>

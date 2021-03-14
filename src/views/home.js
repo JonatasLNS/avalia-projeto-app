@@ -40,6 +40,11 @@ class Home extends React.Component{
         this.props.history.push('/cadastro-projetos')
     }
 
+    avaliar = () => {
+        this.props.history.push('/formulario-avaliacao')
+    }
+
+
     render(){
         return(
             <div>
@@ -69,7 +74,10 @@ class Home extends React.Component{
                     <div className="row">
                         <div className="col-md-12">
                             <div className="bs-component">
-                                <ProjetosTable avaliacoes={this.state.avaliacoes}></ProjetosTable>
+                                <ProjetosTable 
+                                    avaliacoes={this.state.avaliacoes}
+                                    avaliarAction={this.avaliar}>
+                                </ProjetosTable>
                             </div>
                         </div>  
                     </div> 

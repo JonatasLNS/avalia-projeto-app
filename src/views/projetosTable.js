@@ -12,7 +12,11 @@ export default props => {
                 <td>{avaliacao.status}</td>
                 <td>{avaliacao.nota}</td>
                 <td>
-                    <button type="button" className="btn btn-success">Avaliar</button>
+                    <button type="button"  title="Avaliar"
+                            className="btn btn-success" 
+                            onClick={ e => props.avaliarAction()}> 
+                            Avaliar
+                    </button>
                 </td>
             </tr>
         )

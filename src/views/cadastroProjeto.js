@@ -5,8 +5,8 @@ import FormGroup from '../components/form-group'
 import SelectMenu from '../components/selectMenu'
 import { withRouter } from 'react-router-dom'
 
-import UsuarioService from '../app/service/usuarioService'
 import { mensagemSucesso, mensagemErro } from '../components/toastr'
+import AlunosService from '../app/service/alunoService'
 
 
 class CadastroUsuario extends React.Component{
@@ -23,7 +23,19 @@ class CadastroUsuario extends React.Component{
 
     constructor(){
         super();
-        this.service = new UsuarioService();
+        this.service = new AlunosService();
+    }
+
+    getAlunoByMatricula(){
+        this.service.getByMatricula(this.state.matricula)
+        .then( resposta => {
+
+            this.setState({ nomeAluno :  resposta.data})
+
+            console.log(resposta.data)
+        }).catch( error =>  {
+            console.log(error)
+        })
     }
 
     validar(){
@@ -34,7 +46,7 @@ class CadastroUsuario extends React.Component{
         }
 
         if(!this.state.ano){
-            msgs.push('O campo \'Ano é\' obrigatório.')
+            msgs.push('O campo \'Ano\' é obrigatório.')
         }
         
         if(!this.state.semestre){
@@ -46,7 +58,7 @@ class CadastroUsuario extends React.Component{
         }
 
         if(!this.state.matricula){
-            msgs.push('O campo \'Matricula\' é obrigatório.')
+            msgs.push('O campo \'Matrícula\' é obrigatório.')
         }
 
         return msgs;
@@ -118,7 +130,8 @@ class CadastroUsuario extends React.Component{
                                                     id="inputMatricula" 
                                                     className="form-control"
                                                     name="matricula" 
-                                                    onChange={ e => this.setState({matricula: e.target.value})} />
+                                                    onChange={ e => this.setState({matricula: e.target.value})} 
+                                                />
                                             </FormGroup>
                                     </div>
                                     <div className="col-md-9">
@@ -143,9 +156,11 @@ class CadastroUsuario extends React.Component{
                                         </FormGroup>
                                     </div>
                                     <div className="col-md-3">
+                                        
                                         <FormGroup label="Semestre: *" htmlFor="inputSemestre">
                                            <SelectMenu className='form-control' lista={listaSemestre}></SelectMenu>
                                         </FormGroup>
+                                        
                                     </div>
                                     <div className="col-md-6">
                                         <FormGroup label="Curso: *" htmlFor="inputCurso">
@@ -163,7 +178,7 @@ class CadastroUsuario extends React.Component{
                                     <div className="row">
                                         <div className="col-md-12">
 
-                                            <label for="inputNomeProfessor">Nome professor:</label>
+                                            <label htmlFor="inputNomeProfessor">Nome professor:</label>
                                             <div className="input-group mb-3">
                                                 <input type="text"
                                                        id="inputNomeProfessor" 
@@ -181,33 +196,37 @@ class CadastroUsuario extends React.Component{
                                     <div className="row">    
                                         <div className="col-md-12">      
                                             
-                                            <select multiple className="form-control" id="selectProfessoresDisp">
+                                                <select multiple className="form-control" id="selectProfessoresDisp">
                                                 <option>Professor 1</option>
                                                 <option>Professor 2</option>
                                                 <option>Professor 3</option>
                                                 <option>Professor 4</option>
                                                 <option>Professor 5</option>
-                                            </select>                                       
+                                                </select>  
+                                                
+                                            
                                         </div>
                                     </div>
                                     <br />
                                     <div className="row justify-content-end" >
                                         <div className='form-group'>
                                             <div className="col-md-6">   
-                                                <button onClick='' type="button" className="btn btn-outline-success" >Selecionar</button>                                        
+                                                <button  type="button" className="btn btn-outline-success" >Selecionar</button>                                        
                                             </div>
                                         </div>    
                                     </div>
                                     <div className="row">    
-                                        <div className="col-md-12">      
-                                            <label for="selectProfessoresSelec">Professores Selecionados para a banca:</label>
+                                        <div className="col-md-12">  
+                                            <label htmlFor="selectProfessoresSelec">Professores Selecionados para a banca:</label>
+                                             
                                                 <select multiple className="form-control" id="selectProfessoresSelec">
                                                     <option>Professor 1</option>
                                                     <option>Professor 2</option>
                                                     <option>Professor 3</option>
                                                     <option>Professor 4</option>
                                                     <option>Professor 5</option>
-                                                </select>                                       
+                                                </select>    
+                                                                           
                                         </div>
                                     </div>
 

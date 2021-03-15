@@ -1,8 +1,7 @@
 import React from 'react'
 import { Accordion, Card } from "react-bootstrap";
 
-import FormGroup from '../components/form-group'
-import SelectMenu from '../components/selectMenu'
+import ItemFormEixo from '../components/itemFormEixo'
 
 export default (props) => {
 
@@ -23,21 +22,7 @@ export default (props) => {
                 <Accordion.Collapse eventKey="0">
                     <Card.Body>
                         <div> 
-                            <FormGroup label="O título está relacionado com o tema problematizado?" htmlFor="inputFormTitulo1">
-                                <SelectMenu className='form-control' lista={listaOpcoes}></SelectMenu>
-                            </FormGroup>
-                            <FormGroup label="O título apresenta o trabalho desenvolvido?" htmlFor="inputFormTitulo2">
-                            <SelectMenu className='form-control' lista={listaOpcoes}></SelectMenu>
-                                </FormGroup>
-                            <FormGroup label="O título atrai o leitor?" htmlFor="inputFormTitulo3">
-                                <SelectMenu className='form-control' lista={listaOpcoes}></SelectMenu>
-                            </FormGroup>
-                            <FormGroup label="O título está relacionado com uma pesquisa matricial?" htmlFor="inputFormTitulo4">
-                                <SelectMenu className='form-control' lista={listaOpcoes}></SelectMenu>
-                            </FormGroup>
-                            <FormGroup label="O titulo está relacionado com a Linha e o Grupo de Pesquisa?" htmlFor="inputFormTitulo5">
-                                <SelectMenu className='form-control' lista={listaOpcoes}></SelectMenu>
-                            </FormGroup>
+                            <ItemFormEixo listaEixos={subdimensao.eixo}></ItemFormEixo>
                         </div>
                     </Card.Body>
                 </Accordion.Collapse>

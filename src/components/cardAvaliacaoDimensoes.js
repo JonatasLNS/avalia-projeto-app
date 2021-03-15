@@ -7,21 +7,26 @@ function CardAvaliacaoDimensoes(props){
  
     //console.log(props);
 
+    console.log(props)
     const rows = props.listaDimensoes.map( dimensao => {
-        return (
-            <div key={dimensao.id}>
-                <div className="row">
-                    <div className="container">
-                        <Card>
-                            <div className="card-header">{dimensao.descricao}</div>
-                            <div className="card-body"> 
-                                <CardSubdimensoes listaSubdimensoes={dimensao.subdimensao}></CardSubdimensoes>
-                            </div>
-                        </Card>
+
+        if(props.tabSelecionada == "link-"+dimensao.id){
+            return (
+    
+                <div key={dimensao.id}>
+                    <div className="row">
+                        <div className="container">
+                            <Card>
+                                <div className="card-header"><b>{dimensao.descricao}</b></div>
+                                <div className="card-body"> 
+                                    <CardSubdimensoes listaSubdimensoes={dimensao.subdimensao}></CardSubdimensoes>
+                                </div>
+                            </Card>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        }
     })
     
     return(

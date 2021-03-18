@@ -165,6 +165,10 @@ class FormularioAvaliacao extends React.Component{
         this.setState({ tabSelecionada: idTab})
     }
 
+    cancelar = () => {
+        this.props.history.push('/home')
+    }
+
     render(){
         
         return(
@@ -192,21 +196,21 @@ class FormularioAvaliacao extends React.Component{
                                 <div className="container">
                                     <Nav justify variant="pills" defaultActiveKey="link-1">
                                         <Nav.Item >
-                                            <Nav.Link eventKey="link-1" onSelect={() => this.handleClick("link-1")}>O quê?</Nav.Link>
+                                            <Nav.Link eventKey="link-1" onSelect={() => this.handleClick("link-1")}>Foco Investigativo</Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item>
-                                            <Nav.Link eventKey="link-2" onSelect={() => this.handleClick("link-2")}>Porquê?</Nav.Link>
+                                            <Nav.Link eventKey="link-2" onSelect={() => this.handleClick("link-2")}>Justificativa</Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item>
-                                            <Nav.Link eventKey="link-3" onSelect={() => this.handleClick("link-3")}>Com base em quê?</Nav.Link>
+                                            <Nav.Link eventKey="link-3" onSelect={() => this.handleClick("link-3")}>Fundamentação teórica</Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item>
-                                            <Nav.Link eventKey="link-4" onSelect={() => this.handleClick("link-4")}>Como?</Nav.Link>
+                                            <Nav.Link eventKey="link-4" onSelect={() => this.handleClick("link-4")}>Metodologia</Nav.Link>
                                         </Nav.Item>
                                     </Nav>
                                 </div>
                             </div>
-                            <tabItem listaDimensoes={this.state.listaDimensoes}></tabItem>
+                            {/*<tabItem listaDimensoes={this.state.listaDimensoes}></tabItem>*/}
                            <CardAvaliacaoDimensao listaDimensoes={this.state.listaDimensoes} tabSelecionada={this.state.tabSelecionada}></CardAvaliacaoDimensao>
 
                         {/* BOTÕES */}
@@ -214,7 +218,7 @@ class FormularioAvaliacao extends React.Component{
                             <div className='form-group'>
                                 <div className="col-md-12 ms-auto">   
                                         <button  type="button" className="btn btn-success mr-1">Salvar</button>
-                                        <button  type="button" className="btn btn-danger">Cancelar</button>
+                                        <button  type="button" className="btn btn-danger" onClick={this.cancelar}>Cancelar</button>
                                 </div>
                             </div>    
                         </div>

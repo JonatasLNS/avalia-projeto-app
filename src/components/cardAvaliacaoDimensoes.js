@@ -17,7 +17,7 @@ function CardAvaliacaoDimensoes(props){
                     <div className="row">
                         <div className="container">
                             <Card>
-                                <div className="card-header"><b>{dimensao.descricao}</b></div>
+                                <div className="card-header"><b>{dimensao.subdescricao}</b></div>
                                 <div className="card-body"> 
                                     <CardSubdimensoes listaSubdimensoes={dimensao.subdimensao}></CardSubdimensoes>
                                 </div>

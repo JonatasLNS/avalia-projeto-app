@@ -1,20 +1,53 @@
-import React, { useState }  from 'react'
+import React, { useState, useEffect, useRef } from 'react';
 import { Nav } from "react-bootstrap";
-import { withRouter, useHistory } from 'react-router-dom'
+import { withRouter, useHistory, useParams } from 'react-router-dom'
 
-
-import TabItem from '../components/tabItem'
 import CardAvaliacaoDimensao from '../components/cardAvaliacaoDimensoes'
-import ItemFormEixo from '../components/itemFormEixo'
 import CardSubdimensoes from '../components/cardSubdimensoes'
 import FormGroup from '../components/form-group'
 import SelectMenu from '../components/selectMenu'
+import ProjetoService from '../app/service/projetoService'
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const FormularioAvaliacao = () => {
 
     let history = useHistory();
+    const { id } = useParams();
+    
+    const getDadosProjeto = () => {
+        const projetoService = new ProjetoService();
+        if (id !== undefined) {
+            projetoService.obterProjetoById(id)
+            .then( resposta => {
+                setProjeto(resposta.data)
+                setTema(resposta.data.tema)
+                setNomeAluno(resposta.data.aluno.nome)
+                setCurso(resposta.data.aluno.curso)
+                setAnoProjeto(resposta.data.ano)
+                setSemestre(resposta.data.semestre)
+
+                console.log(projeto)
+            }).catch( error =>  {
+                console.log(error)
+            })
+       
+        }
+    }
+
+    useComponentWillMount(() => getDadosProjeto());
+    useComponentDidMount(() => console.log("didMount"));
+
+    const [projeto, setProjeto] = useState()
+    const [subdimensoesState, setSubdimensoes] = useState([0]);
+    const [tabSelecionada, setTabSelecionada] = useState("link-1") 
+    //const [nomeUsuario, setNomeUsuario] = useState()
+    //const [idUsuario, setIdUsuario] = useState()
+    const [tema, setTema] = useState('')
+    const [nomeAluno, setNomeAluno] = useState('')
+    const [curso, setCurso] = useState('')
+    const [anoProjeto, setAnoProjeto] = useState('')
+    const [semestre, setSemestre] = useState('')
 
     const listaDimensoes = [
         { id: 1, 
@@ -161,7 +194,7 @@ const FormularioAvaliacao = () => {
                 ]
             }
     ]
-    
+   
     const listaOpcoes = [
         { label: 'Selecione...' , value: '' },
         { label: 'SIM' , value: '1' },
@@ -169,13 +202,6 @@ const FormularioAvaliacao = () => {
         { label: 'PARCIALMENTE' , value: '3' },
         { label: 'NÃO SE APLICA' , value: '4' }
     ]
-
-        
-    const [tabSelecionada, setTabSelecionada] = useState("link-1") 
-    const [listItemForm, setListItemForm] = useState()
-    const [dimensoesState, setDimensoes] = useState([listaDimensoes])
-
-    const [subdimensoesState, setSubdimensoes] = useState([0]);
     
     const handleChangeDimensao = (e, eixo) => {
         subdimensoesState[eixo.id] =  e.target.value ;
@@ -231,11 +257,11 @@ const FormularioAvaliacao = () => {
                         
                         {/* CARD DO CABEÇÁLIO */}
                         <div className="card mb-3">
-                            <h5 className="card-header">TEMA: A avaliação da produção científica na UCSAL</h5>
+                            <h5 className="card-header">{tema}</h5>
                             <div className="card-body">
-                                <h6 className="card-title">Aluno: Jônatas Lucas Nonato dos Santos</h6>
-                                <h6 className="card-subtitle text-muted">Curso: Bacharelado em Informática</h6> <br />
-                                <h6 className="card-subtitle text-muted">Semestre: 2021.1</h6>
+                                <h6 className="card-title">{`Aluno: ${nomeAluno}`}</h6>
+                                <h6 className="card-subtitle text-muted">{`Curso: ${curso}`}</h6> <br />
+                                <h6 className="card-subtitle text-muted">{`Semestre: ${anoProjeto}.${semestre}`}</h6>
                             </div>
                         </div>
 
@@ -278,5 +304,25 @@ const FormularioAvaliacao = () => {
     )
     
 }
+
+const useComponentWillMount = func => {
+    const willMount = useRef(true);
+    if (willMount.current) {
+      func();
+    }
+    useComponentDidMount(() => {
+      willMount.current = false;
+    });
+  };
+
+const useComponentDidMount = func => useEffect(func, []);
+
+/*const useInputState = initial => {
+    const [state, setState] = useState(initial);
+    const setInputState = e => {
+        setState(e.target.value);
+    };
+    return [state, setInputState];
+};*/
 
 export default withRouter( FormularioAvaliacao )

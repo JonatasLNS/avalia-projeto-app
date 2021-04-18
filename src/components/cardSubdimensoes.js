@@ -1,16 +1,9 @@
 import React from 'react'
 import { Accordion, Card } from "react-bootstrap";
 
-export default (props) => {
+const cardSubdimensoes = (props) => {
 
     const subdimensoes = props.listaSubdimensoes;
-    
-    const listaOpcoes = [
-        { label: 'Selecione...' , value: '' },
-        { label: 'SIM' , value: '1' },
-        { label: 'NÃO' , value: '2' },
-        { label: 'PARCIALMENTE' , value: '3' }
-    ]
 
     const listItems = subdimensoes.map((subdimensao,index) =>
         <div key={subdimensao.id}>
@@ -34,4 +27,6 @@ export default (props) => {
     )
 
 }
+
+export default cardSubdimensoes
 

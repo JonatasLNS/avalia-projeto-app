@@ -1,6 +1,6 @@
 
 
-export default props => {
+const projetosTable = (props) => {
 
     const rows = props.avaliacoes.map( avaliacao => {
         return (
@@ -14,7 +14,7 @@ export default props => {
                 <td>
                     <button type="button"  title="Avaliar"
                             className="btn btn-success" 
-                            onClick={ e => props.avaliarAction()}> 
+                            onClick={ e => props.avaliarAction(avaliacao.projeto.id)}> 
                             Avaliar
                     </button>
                 </td>
@@ -41,3 +41,5 @@ export default props => {
         </table>
     )
 }
+
+export default projetosTable

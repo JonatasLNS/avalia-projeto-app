@@ -16,7 +16,7 @@ function Rotas(){
                 <Route path="/login" component={Login} />
                 <Route path="/cadastro-usuarios" component={CadastroUsuario} />
                 <Route path="/cadastro-projetos" component={CadastroProjeto} />
-                <Route path="/formulario-avaliacao" component={FormularioAvaliacao} />
+                <Route path="/formulario-avaliacao/:id" component={FormularioAvaliacao} />
             </Switch>
         </HashRouter>
     )

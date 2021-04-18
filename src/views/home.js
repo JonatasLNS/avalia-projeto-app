@@ -25,7 +25,7 @@ class Home extends React.Component{
         this.setState({ nomeUsuario: usuarioLogado.nome})
         this.setState({ idUsuario: usuarioLogado.id})
 
-        this.service.listarByProfessorId(1)
+        this.service.listarByProfessorId(usuarioLogado.id)
             .then( resposta => {
 
                 this.setState({ avaliacoes :  resposta.data})
@@ -40,8 +40,8 @@ class Home extends React.Component{
         this.props.history.push('/cadastro-projetos')
     }
 
-    avaliar = () => {
-        this.props.history.push('/formulario-avaliacao')
+    avaliar = (id) => {
+        this.props.history.push(`/formulario-avaliacao/${id}`)
     }
 
 
@@ -57,15 +57,9 @@ class Home extends React.Component{
                     <p className="lead">
                         <a className="btn btn-primary btn-lg" 
                             onClick={this.prepareCadastrarProjetos}
-                            role="button"><i className="fa fa-users"></i>  
+                            role="button"><i className="fa fa-users" href="#/"></i>  
                             Cadastrar Novo Projeto de Pesquisa
                         </a>
-                       
-                        {/*<a className="btn btn-success btn-lg" 
-                            href="https://bootswatch.com/flatly/#" 
-                            role="button"><i className="fa fa-users"></i>  
-                            Cadastrar Professor
-                        </a>*/}
                     </p>
                 </div>
 

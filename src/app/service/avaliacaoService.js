@@ -7,6 +7,6 @@ export default class AvaliacaoService extends ApiService {
     }
 
     listarByProfessorId(id){
-        return this.get('/1')
+        return this.get(`/${id}`)
     }
 }

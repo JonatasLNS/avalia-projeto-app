@@ -13,6 +13,12 @@ export default class ProjetoService extends ApiService {
             params = `${params}&ano=${projetoFiltro.ano}`
         }
 
-        return this.get('params')
+        return this.get(params)
+        //return this.get('params')
     }
+
+    obterProjetoById(id){
+        return this.get(`/${id}`)
+    }
+
 }

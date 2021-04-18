@@ -1,8 +1,6 @@
 import React from 'react'
 import { Accordion, Card } from "react-bootstrap";
 
-import ItemFormEixo from '../components/itemFormEixo'
-
 export default (props) => {
 
     const subdimensoes = props.listaSubdimensoes;
@@ -14,7 +12,7 @@ export default (props) => {
         { label: 'PARCIALMENTE' , value: '3' }
     ]
 
-    const listItems = subdimensoes.map((subdimensao) =>
+    const listItems = subdimensoes.map((subdimensao,index) =>
         <div key={subdimensao.id}>
             <Accordion>
             <Card>
@@ -22,7 +20,7 @@ export default (props) => {
                 <Accordion.Collapse eventKey="0">
                     <Card.Body>
                         <div> 
-                            <ItemFormEixo listaEixos={subdimensao.eixo}></ItemFormEixo>
+                            {props.children[index]}
                         </div>
                     </Card.Body>
                 </Accordion.Collapse>

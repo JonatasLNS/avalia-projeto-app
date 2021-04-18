@@ -5,9 +5,9 @@ export default (props) => {
 
     const dimensoes = props.listaDimensoes;
 
-    const listNav = dimensoes.map((dimensao) =>
-        <Nav.Item>
-            <Nav.Link eventKey={"link-"+dimensao.id}>{dimensao.subdescricao}</Nav.Link>
+    const listNav = dimensoes.map((dimensao, index) =>
+        <Nav.Item key={index}>
+            <Nav.Link eventKey={"link-"+dimensao.id} onSelect={() => this.handleClick(`link-${dimensao.id}`)}>{dimensao.subdescricao}</Nav.Link>
         </Nav.Item>
     )
 

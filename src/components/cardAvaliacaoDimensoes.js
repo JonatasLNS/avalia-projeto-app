@@ -1,25 +1,20 @@
 import React from 'react'
-import { Accordion, Card } from "react-bootstrap";
-
-import CardSubdimensoes from '../components/cardSubdimensoes'
+import { Card } from "react-bootstrap";
 
 function CardAvaliacaoDimensoes(props){
  
-    //console.log(props);
-
-    console.log(props)
-    const rows = props.listaDimensoes.map( dimensao => {
-
+    const rows = props.listaDimensoes.map( (dimensao, index) => {
+        
         if(props.tabSelecionada == "link-"+dimensao.id){
             return (
-    
+                
                 <div key={dimensao.id}>
                     <div className="row">
                         <div className="container">
                             <Card>
-                                <div className="card-header"><b>{dimensao.subdescricao}</b></div>
+                                <div className="card-header"><b>{dimensao.descricao}</b></div>
                                 <div className="card-body"> 
-                                    <CardSubdimensoes listaSubdimensoes={dimensao.subdimensao}></CardSubdimensoes>
+                                    {props.children[index]}
                                 </div>
                             </Card>
                         </div>

@@ -1,5 +1,4 @@
 import React from 'react'
-import { Accordion, Card } from "react-bootstrap";
 
 import FormGroup from '../components/form-group'
 import SelectMenu from '../components/selectMenu'
@@ -19,7 +18,7 @@ export default (props) => {
     const listItems = listaEixos.map((eixo) =>
         <div key={eixo.id}>
             <FormGroup label={eixo.descricao} htmlFor={"selectEixo"+eixo.id}>
-                <SelectMenu className='form-control' lista={listaOpcoes}></SelectMenu>
+                <SelectMenu className='form-control' lista={listaOpcoes} onChange ={props.onChange}></SelectMenu>
             </FormGroup>
         </div>
     )

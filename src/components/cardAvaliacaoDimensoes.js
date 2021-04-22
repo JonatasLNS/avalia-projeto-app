@@ -5,7 +5,7 @@ function CardAvaliacaoDimensoes(props){
  
     const rows = props.listaDimensoes.map( (dimensao, index) => {
         
-        if(props.tabSelecionada === "link-"+dimensao.id){
+        if(props.tabSelecionada === "link-"+index){
             return (
                 
                 <div key={dimensao.id}>
@@ -23,7 +23,9 @@ function CardAvaliacaoDimensoes(props){
             )
         }else{
             //código inútil, apenas para evitar alerta de falta de retorno no console
-            return (<div key={dimensao.id}></div>) 
+            return (
+                <div key={dimensao.id}></div>
+            ) 
         }
     })
     

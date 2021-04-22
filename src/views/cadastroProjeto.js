@@ -4,27 +4,53 @@ import Card from '../components/cards'
 import FormGroup from '../components/form-group'
 import SelectMenu from '../components/selectMenu'
 import { withRouter } from 'react-router-dom'
+import { PickList } from 'primereact/picklist';
 
 import { mensagemSucesso, mensagemErro } from '../components/toastr'
 import AlunosService from '../app/service/alunoService'
 
 
-class CadastroUsuario extends React.Component{
-
-    state = {
-        tema : '',
-        ano : '',
-        semestre : '',
-        curso : '',
-        matricula : '',
-        nomeAluno : '',
-        nomeProfessor: ''
-    }
+class CadastroProjeto extends React.Component{
 
     constructor(){
         super();
         this.service = new AlunosService();
+
+        this.state = {
+            tema : '',
+            ano : '',
+            semestre : '',
+            curso : '',
+            matricula : '',
+            nomeAluno : '',
+            nomeProfessor: '',
+			source: [
+                {nome: 'Arnaldo', disciplina: 'Projeto Final'}, 
+                {nome: 'João', disciplina: 'Análise I'},
+                {nome: 'Maria', disciplina: 'Lógica de Programação'}
+            ],
+			target: []
+		};
+        this.professorTemplate = this.professorTemplate.bind(this);
+		this.onChangePickList = this.onChangePickList.bind(this);
     }
+
+    onChangePickList(event) {
+		this.setState({
+			source: event.source,
+			target: event.target
+		});
+	}
+
+    professorTemplate(professor) {
+		return (
+			<div className='p-clearfix'>
+				<div >
+					{professor.nome} - {professor.disciplina} 
+				</div>
+			</div>
+		);
+	}
 
     getAlunoByMatricula(){
         this.service.getByMatricula(this.state.matricula)
@@ -69,7 +95,7 @@ class CadastroUsuario extends React.Component{
         const msgs = this.validar();
 
         if(msgs && msgs.length > 0){
-            msgs.forEach( (msg, index) => {
+            msgs.forEach( (msg) => {
                 mensagemErro(msg);
             });
             return false;
@@ -191,44 +217,21 @@ class CadastroUsuario extends React.Component{
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>        
+                                    </div> 
 
-                                    <div className="row">    
-                                        <div className="col-md-12">      
-                                            
-                                                <select multiple className="form-control" id="selectProfessoresDisp">
-                                                <option>Professor 1</option>
-                                                <option>Professor 2</option>
-                                                <option>Professor 3</option>
-                                                <option>Professor 4</option>
-                                                <option>Professor 5</option>
-                                                </select>  
-                                                
-                                            
-                                        </div>
-                                    </div>
-                                    <br />
-                                    <div className="row justify-content-end" >
-                                        <div className='form-group'>
-                                            <div className="col-md-6">   
-                                                <button  type="button" className="btn btn-outline-success" >Selecionar</button>                                        
-                                            </div>
-                                        </div>    
-                                    </div>
-                                    <div className="row">    
-                                        <div className="col-md-12">  
-                                            <label htmlFor="selectProfessoresSelec">Professores Selecionados para a banca:</label>
-                                             
-                                                <select multiple className="form-control" id="selectProfessoresSelec">
-                                                    <option>Professor 1</option>
-                                                    <option>Professor 2</option>
-                                                    <option>Professor 3</option>
-                                                    <option>Professor 4</option>
-                                                    <option>Professor 5</option>
-                                                </select>    
-                                                                           
-                                        </div>
-                                    </div>
+                                    {/* Exemplo: https://bit.dev/primefaces/primereact/picklist */}
+                                    <PickList
+                                        source={this.state.source}
+                                        target={this.state.target}
+                                        itemTemplate={this.professorTemplate}
+                                        sourceHeader='Professores Disponíveis:'
+                                        targetHeader='Professores Selcionados para a Banca:'
+                                        responsive={true}
+                                        sourceStyle={{ height: '300px' }}
+                                        targetStyle={{ height: '300px' }}
+                                        onChange={this.onChangePickList}
+                                    />
+                                    
 
                                 </Card>
                                 <br />
@@ -249,4 +252,4 @@ class CadastroUsuario extends React.Component{
     }
 }
 
-export default withRouter( CadastroUsuario )
+export default withRouter( CadastroProjeto )

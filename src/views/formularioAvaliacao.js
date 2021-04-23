@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom'
 import { Nav } from "react-bootstrap";
 import update from 'immutability-helper';
 
-import TabItem from '../components/tabItem'
 import CardAvaliacaoDimensao from '../components/cardAvaliacaoDimensoes'
 import CardSubdimensoes from '../components/cardSubdimensoes'
 import FormGroup from '../components/form-group'
@@ -13,7 +12,6 @@ import DimensaoService from '../app/service/dimensaoService'
 import SelectMenu from '../components/selectMenu'
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import tabItem from '../components/tabItem';
 
 class FormularioAvaliacao extends React.Component{
 

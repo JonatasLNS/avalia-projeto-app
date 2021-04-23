@@ -6,7 +6,7 @@ export default class AlunosService extends ApiService {
         super('/api/alunos')
     }
 
-    getByMatricula(id){
-        return this.get('/1')
+    getByMatricula(matricula){
+        return this.get(`/${matricula}`)
     }
 }

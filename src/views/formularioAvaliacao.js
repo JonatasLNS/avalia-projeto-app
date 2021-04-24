@@ -23,10 +23,10 @@ class FormularioAvaliacao extends React.Component{
         subdimensoesState : [],
         listaOpcoes : [
             { label: 'Selecione...' , value: '' },
-            { label: 'SIM' , value: '1' },
-            { label: 'NÃO' , value: '2' },
-            { label: 'PARCIALMENTE' , value: '3' },
-            { label: 'NÃO SE APLICA' , value: '4' }
+            { label: 'SIM - Este projeto está de acordo com este item.' , value: '1' },
+            { label: 'NÃO - Este projeto não está de acordo a este item.' , value: '2' },
+            { label: 'PARCIALMENTE - Este projeto está parcialmente de acordo a este item. ' , value: '3' },
+            { label: 'NÃO SE APLICA - Este item não é aplicável a este projeto.' , value: '4' }
         ]
     }
 

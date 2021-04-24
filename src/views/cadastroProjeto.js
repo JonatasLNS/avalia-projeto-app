@@ -2,7 +2,7 @@ import React from 'react'
 
 import Card from '../components/cards'
 import FormGroup from '../components/form-group'
-import SelectMenu from '../components/selectMenu'
+
 import { withRouter } from 'react-router-dom'
 import { PickList } from 'primereact/picklist';
 
@@ -29,13 +29,18 @@ class CadastroProjeto extends React.Component{
                 {nome: 'João', disciplina: 'Análise I'},
                 {nome: 'Maria', disciplina: 'Lógica de Programação'}
             ],
-			target: []
+			target: [],
+            disabledCamposAluno: true
 		};
+
         this.cadastrar = this.cadastrar.bind(this);
         this.professorTemplate = this.professorTemplate.bind(this);
 		this.onChangePickList = this.onChangePickList.bind(this);
         this.getAlunoByMatricula = this.getAlunoByMatricula.bind(this);
+
     }
+
+
 
     onChangePickList(event) {
 		this.setState({
@@ -110,16 +115,26 @@ class CadastroProjeto extends React.Component{
     }
 
     getAlunoByMatricula = (matricula) => {
-        new AlunosService().getByMatricula(matricula)
-            .then( resposta => {
-                console.log(resposta.data)
-                this.setState({
-                    nomeAluno: resposta.data.nome,
-                    curso: resposta.data.curso
-                })
-            }).catch( error =>  {
-                mensagemAlerta('Aluno não encontrado com esta matrícula.')
-        })
+        if(matricula && matricula.length > 0){
+            new AlunosService().getByMatricula(matricula)
+                .then( resposta => {
+                    this.setState({
+                        nomeAluno: resposta.data.nome,
+                        curso: resposta.data.curso,
+                        disabledCamposAluno : true
+                    })
+                    mensagemSucesso("Aluno encontrado.")
+                    
+                }).catch( error =>  {
+                    console.log(error)
+                    this.setState({
+                        disabledCamposAluno : false,
+                        nomeAluno: '',
+                        curso: ''
+                    })
+                    mensagemAlerta(`Aluno não encontrado! \n Cadastre um novo Aluno.`)
+            })
+        }
     }
 
     render(){
@@ -133,6 +148,7 @@ class CadastroProjeto extends React.Component{
         return(
 
             <div className="card bg-light mb-3">
+
                 <div className="card-header"><h4>Cadastro de Projetos</h4></div>
                     <div className="card-body">
                         <Card title="Dados do Projeto:">
@@ -168,6 +184,7 @@ class CadastroProjeto extends React.Component{
                                                             id="inputNomeAluno" 
                                                             className="form-control"
                                                             name="nomeAluno" 
+                                                            disabled = {this.state.disabledCamposAluno}
                                                             onChange={ e => this.setState({nomeAluno: e.target.value})} 
                                                             value = {this.state.nomeAluno}
                                                         />
@@ -175,29 +192,28 @@ class CadastroProjeto extends React.Component{
                                                 </div>
                                             </div> 
                                             <div className="row">
-                                                <div className="col-md-3">
-                                                    <FormGroup label="Ano: *" htmlFor="inputAno">
-                                                        <input type="text" 
-                                                            id="inputAno" 
-                                                            className="form-control"
-                                                            name="ano" 
-                                                            onChange={ e => this.setState({ano: e.target.value})} /> 
-                                                    </FormGroup>
-                                                </div>
-                                                <div className="col-md-3">
-                                                    <FormGroup label="Semestre: *" htmlFor="inputSemestre">
-                                                        <SelectMenu className='form-control' lista={listaSemestre}></SelectMenu>
-                                                    </FormGroup>
-                                                </div>
-                                                <div className="col-md-6">
+                                                <div className="col-md-9">
                                                     <FormGroup label="Curso: *" htmlFor="inputCurso">
                                                         <input type="text" 
                                                             id="inputCurso" 
                                                             className="form-control "
                                                             name="curso" 
+                                                            disabled = {this.state.disabledCamposAluno}
                                                             onChange={ e => this.setState({curso: e.target.value})} 
                                                             value = {this.state.curso}
                                                         /> 
+                                                    </FormGroup>
+                                                </div>
+                                                <div className="col-md-3">
+                                                    <FormGroup label="Semestre: *" htmlFor="inputSemestre">
+                                                        <input type="text" 
+                                                            id="inputSemestre" 
+                                                            className="form-control"
+                                                            name="semestre" 
+                                                            disabled = {this.state.disabledCamposAluno}
+                                                            onChange={ e => this.setState({semestre: e.target.value})} 
+                                                            value = {this.state.semestre}
+                                                        />
                                                     </FormGroup>
                                                 </div>
                                             </div> 

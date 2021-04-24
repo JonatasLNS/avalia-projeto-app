@@ -6,12 +6,13 @@ import CadastroProjeto from '../views/cadastroProjeto'
 import FormularioAvaliacao from '../views/formularioAvaliacao'
 import Home from '../views/home'
 
-import { Route, Switch, HashRouter } from 'react-router-dom'
+import { Route, Switch, HashRouter, Redirect } from 'react-router-dom'
 
 function Rotas(){
     return (
         <HashRouter>
             <Switch>
+                <Route exact path="/"><Redirect to="/login"/></Route>
                 <Route path="/home" component={Home} />
                 <Route path="/login" component={Login} />
                 <Route path="/cadastro-usuarios" component={CadastroUsuario} />

@@ -7,14 +7,18 @@ import { withRouter } from 'react-router-dom'
 import { PickList } from 'primereact/picklist';
 
 import { mensagemSucesso, mensagemErro, mensagemAlerta } from '../components/toastr'
+import ProjetoService from '../app/service/projetoService'
 import AlunosService from '../app/service/alunoService'
+import ProfessorService from '../app/service/professorService'
 
 
 class CadastroProjeto extends React.Component{
 
     constructor(){
         super();
-        this.service = new AlunosService();
+        this.service = new ProjetoService();
+        this.alunoService = new AlunosService();
+        this.professorService = new ProfessorService();
 
         this.state = {
             tema : '',
@@ -24,10 +28,11 @@ class CadastroProjeto extends React.Component{
             matricula : '',
             nomeAluno : '',
             nomeProfessor: '',
+            disciplina: '',
 			source: [
-                {nome: 'Arnaldo', disciplina: 'Projeto Final'}, 
-                {nome: 'João', disciplina: 'Análise I'},
-                {nome: 'Maria', disciplina: 'Lógica de Programação'}
+                //{nome: 'Arnaldo', disciplina: 'Projeto Final'}, 
+                //{nome: 'João', disciplina: 'Análise I'},
+                //{nome: 'Maria', disciplina: 'Lógica de Programação'}
             ],
 			target: [],
             disabledCamposAluno: true
@@ -37,6 +42,7 @@ class CadastroProjeto extends React.Component{
         this.professorTemplate = this.professorTemplate.bind(this);
 		this.onChangePickList = this.onChangePickList.bind(this);
         this.getAlunoByMatricula = this.getAlunoByMatricula.bind(this);
+        this.pesquisarProfessores = this.pesquisarProfessores.bind(this);
 
     }
 
@@ -53,7 +59,7 @@ class CadastroProjeto extends React.Component{
 		return (
 			<div className='p-clearfix'>
 				<div >
-					{professor.nome} - {professor.disciplina} 
+					{professor.usuario.nome} - {professor.especialidade} 
 				</div>
 			</div>
 		);
@@ -64,10 +70,6 @@ class CadastroProjeto extends React.Component{
 
         if(!this.state.tema){
             msgs.push('O campo \'Tema\' é obrigatório.')
-        }
-
-        if(!this.state.ano){
-            msgs.push('O campo \'Ano\' é obrigatório.')
         }
         
         if(!this.state.semestre){
@@ -80,6 +82,10 @@ class CadastroProjeto extends React.Component{
 
         if(!this.state.matricula){
             msgs.push('O campo \'Matrícula\' é obrigatório.')
+        }
+
+        if(this.state.target.length < 3){
+            msgs.push('Selecione ao menos 3 professores para a Banca.')
         }
 
         return msgs;
@@ -116,11 +122,14 @@ class CadastroProjeto extends React.Component{
 
     getAlunoByMatricula = (matricula) => {
         if(matricula && matricula.length > 0){
-            new AlunosService().getByMatricula(matricula)
+            this.alunoService.getByMatricula(matricula)
                 .then( resposta => {
+                    console.log(this.getSemestre())
+                    this.getSemestre()
                     this.setState({
                         nomeAluno: resposta.data.nome,
                         curso: resposta.data.curso,
+                        semestre: this.getSemestre(),
                         disabledCamposAluno : true
                     })
                     mensagemSucesso("Aluno encontrado.")
@@ -130,20 +139,57 @@ class CadastroProjeto extends React.Component{
                     this.setState({
                         disabledCamposAluno : false,
                         nomeAluno: '',
-                        curso: ''
+                        curso: '',
+                        semestre: this.getSemestre()
                     })
                     mensagemAlerta(`Aluno não encontrado! \n Cadastre um novo Aluno.`)
-            })
+                 })
         }
     }
 
-    render(){
+    getSemestre = () => {
+        let data = new Date()
+        let ano = data.getFullYear();
+        let mes = data.getMonth()+1;
+        let semestre = 1;
 
-        const listaSemestre = [
-            { label: 'Selecione...' , value: '' },
-            { label: 'PRIMEIRO' , value: '1' },
-            { label: 'SEGUNDO' , value: '2' }
-        ]
+        if(mes > 6){
+            semestre = 2
+        }
+        return `${ano}.${semestre}`
+    }
+
+    pesquisarProfessores = () => {
+
+        const professorFiltro = {
+            nome: this.state.nomeProfessor,
+            disciplina: this.state.disciplina
+        }
+
+        this.professorService.consultar(professorFiltro)
+            .then( resposta => {
+                if(resposta.data.length){
+                    if(resposta.data.length > 1){
+                        mensagemSucesso(`${resposta.data.length} Professores encontrados para o filtro.`)
+                    }else{
+                        mensagemSucesso(`${resposta.data.length} Professor encontrado para o filtro.`)
+                    }
+                    
+                }else{
+                    mensagemAlerta("Nenhum professor encontrado!")
+                }
+                this.setState({
+                    source: resposta.data
+                })
+            }).catch( error =>  {
+                mensagemErro(error)
+                this.setState({
+                    source: []
+                })
+            })
+    }
+
+    render(){
 
         return(
 
@@ -222,39 +268,82 @@ class CadastroProjeto extends React.Component{
                             </div> 
                         </Card>   
 
-                        <Card title="Banca Avaliativa:">
-                            
-                            <div className="row">
-                                <div className="col-md-12">
 
-                                    <label htmlFor="inputNomeProfessor">Nome professor:</label>
-                                    <div className="input-group mb-3">
-                                        <input type="text"
-                                                id="inputNomeProfessor" 
-                                                className="form-control" 
-                                                nome="nomeProfessor"
-                                                onChange={ e => this.setState({nomeProfessor: e.target.value})}
-                                        />
-                                        <div className="input-group-append">
-                                            <button className="btn btn-outline-success" type="button">Filtrar</button>
+                        <Card title="Banca Avaliativa:">
+
+                            <div className="row">
+                                    <div className="col-md-12">
+                                        <div className="card border-success mb-3" >
+                                            <div className="card-header"> 
+                                                <i className="pi pi-info-circle" style={{'fontSize': '1em'}}></i>
+                                                &nbsp; Buscar Professores:
+                                            </div>
+                                            <div className="card-body">
+                                                <p className="card-text">Utilize os campos abaixo para filtrar e selecionar os professores que irão compor a banca e estarão aptos a avaliar o projeto de pesquisa.</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div> 
+                            </div>
 
-                            {/* Exemplo: https://bit.dev/primefaces/primereact/picklist */}
-                            <PickList
-                                source={this.state.source}
-                                target={this.state.target}
-                                itemTemplate={this.professorTemplate}
-                                sourceHeader='Professores Disponíveis:'
-                                targetHeader='Professores Selcionados para a Banca:'
-                                responsive={true}
-                                sourceStyle={{ height: '300px' }}
-                                targetStyle={{ height: '300px' }}
-                                onChange={this.onChangePickList}
-                            />
                             
+                            <div className="row">
+                                    <div className="col-md-12">
+                                        <div className="card">
+                                            <div className="card-body">
+
+                                                    <div className="row">
+                                                        <div className="col-md-12">
+                                                            <FormGroup label="Nome professor:" htmlFor="inputNomeProfessor">
+                                                                <input type="text" 
+                                                                    id="inputNomeProfessor" 
+                                                                    className="form-control"
+                                                                    name="nomeProfessor" 
+                                                                    onChange={ e => this.setState({nomeProfessor: e.target.value})} 
+                                                                    value = {this.state.nomeProfessor}
+                                                                />
+                                                            </FormGroup>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="row">
+                                                        <div className="col-md-12">
+                                                            <FormGroup label="Disciplina:" htmlFor="inputDisciplina">
+                                                                <input type="text" 
+                                                                    id="inputDisciplina" 
+                                                                    className="form-control"
+                                                                    name="disciplina" 
+                                                                    onChange={ e => this.setState({disciplina: e.target.value}) } 
+                                                                />
+                                                            </FormGroup>
+                                                        </div>
+                                                    </div> 
+
+                                                    <div className="row justify-content-end">
+                                                        <div className='form-group'>
+                                                            <div className="col-md-12 ms-auto">   
+                                                                    <button  onClick={this.pesquisarProfessores}  type="button" className="btn btn-success mr-1">Filtrar</button>
+                                                            </div>
+                                                        </div>    
+                                                    </div>
+
+                                                    {/* Exemplo: https://bit.dev/primefaces/primereact/picklist */}
+                                                    <PickList
+                                                        source={this.state.source}
+                                                        target={this.state.target}
+                                                        itemTemplate={this.professorTemplate}
+                                                        sourceHeader='Professores Disponíveis:'
+                                                        targetHeader='Professores Selcionados para a Banca:'
+                                                        responsive={true}
+                                                        sourceStyle={{ height: '300px' }}
+                                                        targetStyle={{ height: '300px' }}
+                                                        onChange={this.onChangePickList}
+                                                    />
+                                                
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
 
                         </Card>
                         <br />

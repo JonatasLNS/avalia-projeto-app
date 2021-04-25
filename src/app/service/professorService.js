@@ -7,6 +7,7 @@ export default class AlunosService extends ApiService {
     }
 
     consultar(professorFiltro){
+
         let params = `/?`
 
         if(professorFiltro.nome){

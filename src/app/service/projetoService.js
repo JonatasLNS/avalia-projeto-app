@@ -6,6 +6,11 @@ export default class ProjetoService extends ApiService {
         super('/api/projetos')
     }
 
+    salvar(projeto){
+        return this.post('/', projeto);
+        
+    }
+
     consultar(projetoFiltro){
         let params = `?idProfessor=${projetoFiltro.idProfessor}`
 
@@ -14,7 +19,6 @@ export default class ProjetoService extends ApiService {
         }
 
         return this.get(params)
-        //return this.get('params')
     }
 
     obterProjetoById(id){

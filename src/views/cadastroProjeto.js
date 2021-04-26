@@ -26,14 +26,11 @@ class CadastroProjeto extends React.Component{
             semestre : '',
             curso : '',
             matricula : '',
+            idAluno : '',
             nomeAluno : '',
             nomeProfessor: '',
             disciplina: '',
-			source: [
-                //{nome: 'Arnaldo', disciplina: 'Projeto Final'}, 
-                //{nome: 'João', disciplina: 'Análise I'},
-                //{nome: 'Maria', disciplina: 'Lógica de Programação'}
-            ],
+			source: [],
 			target: [],
             disabledCamposAluno: true
 		};
@@ -71,6 +68,14 @@ class CadastroProjeto extends React.Component{
         if(!this.state.tema){
             msgs.push('O campo \'Tema\' é obrigatório.')
         }
+
+        if(!this.state.matricula){
+            msgs.push('O campo \'Matrícula\' é obrigatório.')
+        }
+
+        if(!this.state.nomeAluno){
+            msgs.push('O campo \'nomeAluno\' é obrigatório.')
+        }
         
         if(!this.state.semestre){
             msgs.push('O campo \'Semestre\' é obrigatório.')
@@ -78,10 +83,6 @@ class CadastroProjeto extends React.Component{
 
         if(!this.state.curso){
             msgs.push('O campo \'Curso\' é obrigatório.')
-        }
-
-        if(!this.state.matricula){
-            msgs.push('O campo \'Matrícula\' é obrigatório.')
         }
 
         if(this.state.target.length < 3){
@@ -102,15 +103,20 @@ class CadastroProjeto extends React.Component{
             return false;
         }
 
-        const usuario = {
-            nome  : this.state.nome,
-            email : this.state.email,
-            senha : this.state.senha
+        const projeto = {
+            tema  : this.state.tema,
+            semestre : this.state.semestre,
+            curso : this.state.curso,
+            idAluno: this.state.idAluno,
+            nomeAluno: this.state.nomeAluno,
+            listaProfessores: this.state.target
         }
-        this.service.salvar(usuario)
+
+        console.log(projeto)
+        this.service.salvar(projeto)
             .then( response => {
                 mensagemSucesso('Projeto cadastrado com sucesso!')
-                this.props.history.push('/login')
+                this.props.history.push('/home')
             }).catch(error => {
                 mensagemErro(error.response.data)
             })
@@ -127,11 +133,13 @@ class CadastroProjeto extends React.Component{
                     console.log(this.getSemestre())
                     this.getSemestre()
                     this.setState({
+                        idAluno: resposta.data.id,
                         nomeAluno: resposta.data.nome,
                         curso: resposta.data.curso,
                         semestre: this.getSemestre(),
                         disabledCamposAluno : true
                     })
+                    console.log(this.state.idAluno)
                     mensagemSucesso("Aluno encontrado.")
                     
                 }).catch( error =>  {

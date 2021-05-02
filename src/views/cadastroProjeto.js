@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Card from '../components/cards'
+import CardMensagem from '../components/cardMensagem'
 import FormGroup from '../components/form-group'
 
 import { withRouter } from 'react-router-dom'
@@ -10,6 +11,7 @@ import { mensagemSucesso, mensagemErro, mensagemAlerta } from '../components/toa
 import ProjetoService from '../app/service/projetoService'
 import AlunosService from '../app/service/alunoService'
 import ProfessorService from '../app/service/professorService'
+import LocalStorageService from '../app/service/localstorageService'
 
 
 class CadastroProjeto extends React.Component{
@@ -21,6 +23,8 @@ class CadastroProjeto extends React.Component{
         this.professorService = new ProfessorService();
 
         this.state = {
+            nomeUsuario: '',
+            idUsuario: '',
             tema : '',
             ano : '',
             semestre : '',
@@ -43,7 +47,11 @@ class CadastroProjeto extends React.Component{
 
     }
 
-
+    componentDidMount(){
+        const usuarioLogado = LocalStorageService.obterItem('_usuario_logado') 
+        this.setState({ nomeUsuario: usuarioLogado.nome})
+        this.setState({ idUsuario: usuarioLogado.id})
+    }
 
     onChangePickList(event) {
 		this.setState({
@@ -109,6 +117,7 @@ class CadastroProjeto extends React.Component{
             curso : this.state.curso,
             idAluno: this.state.idAluno,
             nomeAluno: this.state.nomeAluno,
+            idUsuarioOrientador: this.state.idUsuario,
             listaProfessores: this.state.target
         }
 
@@ -277,25 +286,12 @@ class CadastroProjeto extends React.Component{
                         </Card>   
 
 
-                        <Card title="Banca Avaliativa:">
-
+                        <Card title="Banca Avaliativa:">   
                             <div className="row">
                                     <div className="col-md-12">
-                                        <div className="card border-success mb-3" >
-                                            <div className="card-header"> 
-                                                <i className="pi pi-info-circle" style={{'fontSize': '1em'}}></i>
-                                                &nbsp; Buscar Professores:
-                                            </div>
-                                            <div className="card-body">
-                                                <p className="card-text">Utilize os campos abaixo para filtrar e selecionar os professores que irão compor a banca e estarão aptos a avaliar o projeto de pesquisa.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </div>
 
-                            
-                            <div className="row">
-                                    <div className="col-md-12">
+                                        <CardMensagem title="Busca de Professores:" text="Utilize os campos abaixo para filtrar e selecionar os professores que irão compor a banca e estarão aptos a avaliar o projeto de pesquisa."></CardMensagem>
+
                                         <div className="card">
                                             <div className="card-body">
 
@@ -325,6 +321,7 @@ class CadastroProjeto extends React.Component{
                                                             </FormGroup>
                                                         </div>
                                                     </div> 
+
 
                                                     <div className="row justify-content-end">
                                                         <div className='form-group'>

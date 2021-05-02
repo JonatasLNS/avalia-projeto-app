@@ -8,7 +8,7 @@ const projetosTable = (props) => {
                 <td>{avaliacao.projeto.ano}.{avaliacao.projeto.semestre}</td>
                 <td>{avaliacao.projeto.tema}</td>
                 <td>{avaliacao.projeto.aluno.nome}</td>
-                <td>{avaliacao.professor.usuario.nome}</td>
+                <td>{avaliacao.projeto.professorOrientador.usuario.nome}</td>
                 <td>{avaliacao.status}</td>
                 <td>{avaliacao.nota}</td>
                 <td>

@@ -10,6 +10,7 @@ import FormGroup from '../components/form-group'
 import ProjetoService from '../app/service/projetoService'
 import DimensaoService from '../app/service/dimensaoService'
 import SelectMenu from '../components/selectMenu'
+import CardMensagem from '../components/cardMensagem'
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -104,6 +105,10 @@ class FormularioAvaliacao extends React.Component{
                         </div>
                         
                         {/* FORMULARIO DE AVALIAÇÃO */}
+
+                        <CardMensagem title="Avaliação:"
+                                      text="Utilize os campos abaixo para filtrar e selecionar os professores que irão compor a banca e estarão aptos a avaliar o projeto de pesquisa."
+                        ></CardMensagem>
 
                         {/* Abas */}
                         <div className="row">

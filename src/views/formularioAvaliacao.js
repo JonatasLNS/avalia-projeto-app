@@ -7,21 +7,35 @@ import update from 'immutability-helper';
 import CardAvaliacaoDimensao from '../components/cardAvaliacaoDimensoes'
 import CardSubdimensoes from '../components/cardSubdimensoes'
 import FormGroup from '../components/form-group'
+import FormGroupAvaliacao from '../components/form-group-avaliacao'
 import ProjetoService from '../app/service/projetoService'
 import DimensaoService from '../app/service/dimensaoService'
 import SelectMenu from '../components/selectMenu'
 import CardMensagem from '../components/cardMensagem'
 
+import { mensagemSucesso, mensagemErro, mensagemAlerta } from '../components/toastr'
+
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import { confirmDialog } from 'primereact/confirmdialog'; // To use confirmDialog method
 
 class FormularioAvaliacao extends React.Component{
 
+    constructor() {
+        super()
+        //this.handleCheck = this.handleCheck.bind(this);
+    }
+
     state = {
         tabSelecionada: "link-0",
+        checked: false,
         projeto: {},
         aluno:{},
         listaDimensoes : [],
         subdimensoesState : [],
+        mostrarTextComentarioState: [],
+        textAreaComentarioState: [],
+        isCheckedState: [],
         listaOpcoes : [
             { label: 'Selecione...' , value: '' },
             { label: 'SIM - Este projeto está de acordo com este item.' , value: '1' },
@@ -30,6 +44,88 @@ class FormularioAvaliacao extends React.Component{
             { label: 'NÃO SE APLICA - Este item não é aplicável a este projeto.' , value: '4' }
         ]
     }
+
+    handleCheck = (e, eixo) => {
+
+        if(e.target.checked){
+            this.setState(update(this.state, {
+                mostrarTextComentarioState: {
+                    [eixo.id]: {
+                        $set: true
+                    }
+                },
+                isCheckedState: {
+                    [eixo.id]: {
+                        $set: true
+                    }
+                }
+            }));
+
+        }else{
+            this.setState(update(this.state, {
+                mostrarTextComentarioState: {
+                    [eixo.id]: {
+                        $set: false
+                    }
+                },
+                isCheckedState: {
+                    [eixo.id]: {
+                        $set: false
+                    }
+                },
+                textAreaComentarioState: {
+                    [eixo.id]: {
+                        $set: ''
+                    }
+                }
+            }));
+        }
+        
+    }
+
+    confirm = () => {
+        confirmDialog({
+            message: 'A avaliação está incompleta, deseja salvar e continuar a avaliação mais tarde?',
+            header: 'Confirmação',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
+            accept: () => this.acceptFunc(),
+            reject: () => this.rejectFunc()
+        });
+    }
+
+    confirmCancel = () => {
+        confirmDialog({
+            message: 'Os dados não foram salvos, deseja cancelar a avaliação?',
+            header: 'Confirmação',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
+            accept: () => this.acceptCancel(),
+            reject: () => this.rejectCancel()
+        });
+    }
+
+    acceptFunc(){
+        mensagemSucesso("SALVO!")
+    }
+
+    rejectFunc(){
+        mensagemErro("não salvou")
+    }
+
+    acceptCancel(){
+        this.props.history.push('/home')
+    }
+
+    rejectCancel(){
+        
+    }
+
+    setChecked(){
+        alert('teste')
+    }  
 
     componentDidMount(){
 
@@ -56,10 +152,22 @@ class FormularioAvaliacao extends React.Component{
                     listaDimensoes: resposta.data
                 })
 
-                //console.log(this.state.listaDimensoes)
-
             }).catch( error =>  {
                 console.log(error)
+            })
+
+            this.state.listaDimensoes.map(dimensao => {
+                dimensao.subdimensoes.map(subdimensao => {
+                    subdimensao.eixos.map(eixo => {
+                        this.setState(update(this.state, {
+                            mostrarTextComentarioState: {
+                                [eixo.id]: {
+                                    $set: false
+                                }
+                            }
+                        }));
+                    })       
+                })  
             })
     }
 
@@ -79,8 +187,78 @@ class FormularioAvaliacao extends React.Component{
       
     }
 
+    handleChangeTextArea = (e, eixo) => {
+
+        this.setState(update(this.state, {
+            textAreaComentarioState: {
+                [eixo.id]: {
+                    $set: e.target.value
+                }
+            }
+        }))
+      
+    }
+
     cancelar = () => {
-        this.props.history.push('/home')
+        this.confirmCancel()
+    }
+
+    salvar = () => {
+
+       
+        if(this.validaAvaliacaoVazia()){
+            mensagemAlerta("Preencha os dados da avaliação antes de salvar!");
+        }else{
+            if(!this.validaAvaliacaoCompleta()){
+                this.confirm()
+            }else{
+                mensagemSucesso("SALVO!")
+            }
+        }
+
+       // console.log(this.state.subdimensoesState)
+    }
+
+    validaAvaliacaoCompleta(){
+
+        const subdimensoesState = this.state.subdimensoesState
+
+        let isCompleta = true
+
+        this.state.listaDimensoes.map( dimensao => {
+            dimensao.subdimensoes.map(subdimensao => {
+                subdimensao.eixos.map(eixo => {
+                    if(!subdimensoesState[eixo.id]){
+                        isCompleta = false
+                    }
+                })       
+            })  
+        })
+        
+
+        return isCompleta
+   
+    }
+
+    validaAvaliacaoVazia(){
+
+        const subdimensoesState = this.state.subdimensoesState
+
+        let isVazia = true
+
+        this.state.listaDimensoes.map( dimensao => {
+            dimensao.subdimensoes.map(subdimensao => {
+                subdimensao.eixos.map(eixo => {
+                    if(subdimensoesState[eixo.id]){
+                        isVazia = false
+                    }
+                })       
+            })  
+        })
+
+
+        return isVazia
+   
     }
 
     render(){
@@ -107,7 +285,7 @@ class FormularioAvaliacao extends React.Component{
                         {/* FORMULARIO DE AVALIAÇÃO */}
 
                         <CardMensagem title="Avaliação:"
-                                      text="Utilize os campos abaixo para filtrar e selecionar os professores que irão compor a banca e estarão aptos a avaliar o projeto de pesquisa."
+                                      text="Utilize os campos abaixo para realizar a avaliação."
                         ></CardMensagem>
 
                         {/* Abas */}
@@ -141,14 +319,41 @@ class FormularioAvaliacao extends React.Component{
                                                                     {
                                                                         subdimensao.eixos.map((eixo) =>
                                                                         <div key={eixo.id}>
-                                                                            <FormGroup label={eixo.descricao} htmlFor={"selectEixo"+eixo.id}>
+                                                                            <FormGroupAvaliacao label={eixo.descricao} htmlFor={"selectEixo"+eixo.id}>
                                                                                 <SelectMenu 
                                                                                     className='form-control' 
                                                                                     lista={this.state.listaOpcoes}
                                                                                     onChange={ e => this.handleChangeDimensao(e, eixo)}
-                                                                                    value = {this.state.subdimensoesState[eixo.id]}>
+                                                                                    value = {this.state.subdimensoesState[eixo.id]}    
+                                                                                >
                                                                                 </SelectMenu>
-                                                                            </FormGroup>
+                                                                            
+
+                                                                                <div className="form-check" data-bs-toggle="tooltip" data-bs-placement="right" title="Não é obrigatório inserir um comentário.">
+                                                                                    <input className="form-check-input" 
+                                                                                            type="checkbox"  
+                                                                                            checked={this.state.isCheckedState[eixo.id]}
+                                                                                            id={"selectEixo"+eixo.id} 
+                                                                                            onChange={e => this.handleCheck(e, eixo)}
+                                                                                            disabled = {!this.state.subdimensoesState[eixo.id]}
+                                                                                    />
+                                                                                    <label className="form-check-label" htmlFor={"selectEixo"+eixo.id}> <i>Comentário</i></label>
+                                                                                </div>
+
+                                                                                {this.state.mostrarTextComentarioState[eixo.id] && 
+                                                                                    <div class="mb-3">
+                                                                                        <textarea class="form-control" 
+                                                                                                    id={"textArea"+eixo.id} 
+                                                                                                    rows="3"
+                                                                                                    onChange={ e => this.handleChangeTextArea(e, eixo)}
+                                                                                                    value = {this.state.textAreaComentarioState[eixo.id]} 
+                                                                                                    
+                                                                                        />
+                                                                                    </div>
+                                                                                }
+                                                                            
+                                                                            </FormGroupAvaliacao>
+
                                                                         </div>
                                                                         )
                                                                     }
@@ -168,8 +373,8 @@ class FormularioAvaliacao extends React.Component{
                         <div className="row justify-content-end">
                             <div className='form-group'>
                                 <div className="col-md-12 ms-auto">   
-                                        <button  type="button" className="btn btn-success mr-1">Salvar</button>
-                                        <button  type="button" className="btn btn-danger" onClick={this.cancelar}>Cancelar</button>
+                                        <button  type="button" className="btn btn-success mr-1" onClick={this.salvar}>Salvar</button>
+                                        <button  type="button" className="btn btn-danger"       onClick={this.cancelar}>Cancelar</button>
                                 </div>
                             </div>    
                         </div>

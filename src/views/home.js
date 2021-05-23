@@ -55,11 +55,11 @@ class Home extends React.Component{
                     <hr className="my-4" />
 
                     <p className="lead">
-                        <a className="btn btn-primary btn-lg" 
-                            onClick={this.prepareCadastrarProjetos}
-                            role="button"><i className="fa fa-users" href="#/"></i>  
-                            Cadastrar Novo Projeto de Pesquisa
-                        </a>
+                    <fieldset>
+                        <button onClick={this.prepareCadastrarProjetos} className="btn btn-primary btn-lg mr-1">Cadastrar Novo Projeto de Pesquisa</button>
+                        <button onClick={""} className="btn btn-danger btn-lg">Relatório Avaliações</button>
+                    </fieldset>
+                        
                     </p>
                 </div>
 

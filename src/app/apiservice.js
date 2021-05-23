@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const httpClient = axios.create({
-    baseURL : 'https://avaliaucsal-api.herokuapp.com/'
+    //baseURL : 'https://avaliaucsal-api.herokuapp.com/'
+    baseURL : 'http://localhost:8080'
 })
 
 class ApiService{
@@ -29,7 +30,6 @@ class ApiService{
         const requestUrl = `${this.apiurl}${url}`
         return httpClient.get(requestUrl);
     }
-
 
 }
 

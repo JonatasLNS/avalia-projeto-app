@@ -9,13 +9,13 @@ const projetosTable = (props) => {
                 <td>{avaliacao.projeto.tema}</td>
                 <td>{avaliacao.projeto.aluno.nome}</td>
                 <td>{avaliacao.projeto.professorOrientador.usuario.nome}</td>
-                <td>{avaliacao.status}</td>
+                <td>{(avaliacao.status==='PENDENTE')?"Pendente":((avaliacao.status==='EM_ANDAMENTO')?"Em Andamento":"Concluída")}</td>
                 <td>{avaliacao.nota}</td>
                 <td>
                     <button type="button"  title="Avaliar"
-                            className="btn btn-success" 
-                            onClick={ e => props.avaliarAction(avaliacao.projeto.id)}> 
-                            Avaliar
+                            className={(avaliacao.status==='PENDENTE')?"btn btn-success":((avaliacao.status==='EM_ANDAMENTO')?"btn btn-warning":"btn btn-danger")}
+                            onClick={ e => props.avaliarAction(avaliacao.id)}> 
+                            {(avaliacao.status==='PENDENTE')?"AVALIAR":((avaliacao.status==='EM_ANDAMENTO')?"CONTINUAR":"VISUALIZAR")}
                     </button>
                 </td>
             </tr>

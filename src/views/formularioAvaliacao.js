@@ -6,9 +6,9 @@ import update from 'immutability-helper';
 
 import CardAvaliacaoDimensao from '../components/cardAvaliacaoDimensoes'
 import CardSubdimensoes from '../components/cardSubdimensoes'
-import FormGroup from '../components/form-group'
 import FormGroupAvaliacao from '../components/form-group-avaliacao'
-import ProjetoService from '../app/service/projetoService'
+import AvaliacaoService from '../app/service/avaliacaoService'
+import DadosAvaliacaoService from '../app/service/dadosAvaliacaoService'
 import DimensaoService from '../app/service/dimensaoService'
 import SelectMenu from '../components/selectMenu'
 import CardMensagem from '../components/cardMensagem'
@@ -17,24 +17,26 @@ import { mensagemSucesso, mensagemErro, mensagemAlerta } from '../components/toa
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { confirmDialog } from 'primereact/confirmdialog'; // To use confirmDialog method
+import { confirmDialog } from 'primereact/confirmdialog';
 
 class FormularioAvaliacao extends React.Component{
 
-    constructor() {
-        super()
-        //this.handleCheck = this.handleCheck.bind(this);
+    constructor(){
+        super();
+        this.service = new AvaliacaoService();
     }
 
     state = {
         tabSelecionada: "link-0",
         checked: false,
+        avaliacao: {},
         projeto: {},
         aluno:{},
+        dadosAvaliacao:[],
         listaDimensoes : [],
         subdimensoesState : [],
         mostrarTextComentarioState: [],
-        textAreaComentarioState: [],
+        textAreaObservacaoState: [],
         isCheckedState: [],
         listaOpcoes : [
             { label: 'Selecione...' , value: '' },
@@ -73,7 +75,7 @@ class FormularioAvaliacao extends React.Component{
                         $set: false
                     }
                 },
-                textAreaComentarioState: {
+                textAreaObservacaoState: {
                     [eixo.id]: {
                         $set: ''
                     }
@@ -83,7 +85,7 @@ class FormularioAvaliacao extends React.Component{
         
     }
 
-    confirm = () => {
+    confirmSalvarEmAndamento(){
         confirmDialog({
             message: 'A avaliação está incompleta, deseja salvar e continuar a avaliação mais tarde?',
             header: 'Confirmação',
@@ -95,56 +97,152 @@ class FormularioAvaliacao extends React.Component{
         });
     }
 
-    confirmCancel = () => {
+    confirmFinalizar(){
         confirmDialog({
-            message: 'Os dados não foram salvos, deseja cancelar a avaliação?',
+            message: 'A avaliação foi concluída, deseja salvar?',
             header: 'Confirmação',
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Sim',
             rejectLabel: 'Não',
+            accept: () => this.acceptFinalizar(),
+            reject: () => this.rejectFunc()
+        });
+    }
+
+    confirmCancel(){
+        confirmDialog({
+            message: 'Os dados alterados não foram salvos, deseja sair?',
+            header: 'Confirmação',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sim',
+            acceptLabel: 'Salvar em Andamento',
+            rejectLabel: 'Não',
             accept: () => this.acceptCancel(),
-            reject: () => this.rejectCancel()
+            reject: () => this.rejectFunc()
         });
     }
 
     acceptFunc(){
-        mensagemSucesso("SALVO!")
+        
+        console.log(this.state.avaliacao)
+        this.service.salvar(this.state.avaliacao)
+        .then( response => {
+            mensagemSucesso('Avaliação salva com sucesso!')
+            this.props.history.push('/home')
+        }).catch(error => {
+            mensagemErro(error.response.data)
+        })
+ 
     }
 
     rejectFunc(){
-        mensagemErro("não salvou")
+        
+    }
+
+    acceptFinalizar(){
+        
+        console.log(this.state.avaliacao)
+        this.service.salvar(this.state.avaliacao)
+        .then( response => {
+            mensagemSucesso('Avaliação salva com sucesso!')
+            this.props.history.push('/home')
+        }).catch(error => {
+            mensagemErro(error.response.data)
+        })
+ 
     }
 
     acceptCancel(){
         this.props.history.push('/home')
     }
 
-    rejectCancel(){
-        
-    }
+    montaListaDadosAvaliacao(){
 
-    setChecked(){
-        alert('teste')
-    }  
+        const avaliacaoList = []
+
+        this.state.listaDimensoes.map(dimensao => {
+            dimensao.subdimensoes.map(subdimensao => {
+                subdimensao.eixos.map(eixo => {
+                    if(this.state.subdimensoesState[eixo.id]){
+                        avaliacaoList.push(
+                            {
+                                idEixo              : eixo.id,
+                                selectValue         : this.state.subdimensoesState[eixo.id],
+                                checkedObservacao : ((this.state.isCheckedState[eixo.id] === undefined) ? false : this.state.isCheckedState[eixo.id]) ,
+                                textObservacao      : ((this.state.textAreaObservacaoState[eixo.id] === undefined) ? "" : this.state.textAreaObservacaoState[eixo.id]),
+                            }
+                        )
+                    }
+                    
+                })       
+            })  
+        })
+        console.log(avaliacaoList)
+        return avaliacaoList
+    } 
 
     componentDidMount(){
 
-        const projetoService = new ProjetoService();
+        const dadosAvaliacaoService = new DadosAvaliacaoService();
         const dimensaoService = new DimensaoService();
         
         const params = this.props.match.params
 
-        projetoService.obterProjetoById(params.id)
-            .then( resposta => {
-
-                this.setState({ 
-                    projeto: resposta.data,
-                    aluno: resposta.data.aluno
-                })
-
-            }).catch( error =>  {
-                console.log(error)
+        this.service.buscarAvaliacaoById(params.id)
+        .then( resposta => {
+            console.log(resposta.projeto)
+            this.setState({ 
+                avaliacao: resposta.data,
+                projeto: resposta.data.projeto,
+                aluno: resposta.data.projeto.aluno
             })
+
+        }).catch( error =>  {
+            console.log(error)
+        })
+
+        const dadosFiltro = {
+            avaliacaoId: params.id
+        }
+
+        dadosAvaliacaoService.consultar(dadosFiltro)
+        .then( resposta => {
+            this.setState({ 
+                dadosAvaliacao: resposta.data
+            })
+            
+            console.log(resposta.data)
+
+            resposta.data.map(itemAvaliacao => {
+                this.setState(update(this.state, {
+                    subdimensoesState: {
+                        [itemAvaliacao.eixo.id]: {
+                            $set: itemAvaliacao.valorSelect
+                        }
+                    },
+                    mostrarTextComentarioState: {
+                        [itemAvaliacao.eixo.id]: {
+                            $set:  itemAvaliacao.checked
+                        }
+                    },
+                    textAreaObservacaoState: {
+                        [itemAvaliacao.eixo.id]: {
+                            $set: itemAvaliacao.observacao
+                        }
+                    },
+                    isCheckedState: {
+                        [itemAvaliacao.eixo.id]: {
+                            $set: itemAvaliacao.checked
+                        }
+                    }
+                    
+                }));
+            })
+        }).catch( error =>  {
+            console.log(error)
+        })
+
+
 
         dimensaoService.listarDimensoes()
             .then( resposta => {
@@ -190,7 +288,7 @@ class FormularioAvaliacao extends React.Component{
     handleChangeTextArea = (e, eixo) => {
 
         this.setState(update(this.state, {
-            textAreaComentarioState: {
+            textAreaObservacaoState: {
                 [eixo.id]: {
                     $set: e.target.value
                 }
@@ -205,18 +303,31 @@ class FormularioAvaliacao extends React.Component{
 
     salvar = () => {
 
-       
         if(this.validaAvaliacaoVazia()){
             mensagemAlerta("Preencha os dados da avaliação antes de salvar!");
         }else{
             if(!this.validaAvaliacaoCompleta()){
-                this.confirm()
+                this.preparaDadosSalvar("EM_ANDAMENTO")
+                this.confirmSalvarEmAndamento()
             }else{
-                mensagemSucesso("SALVO!")
+                this.preparaDadosSalvar("EFETIVADO")
+                this.confirmFinalizar()
             }
         }
 
        // console.log(this.state.subdimensoesState)
+    }
+
+    preparaDadosSalvar(status){
+        const dadosAvaliacao = this.montaListaDadosAvaliacao()
+        
+        this.setState({
+            avaliacao: {
+                    ...this.state.avaliacao,
+                    dadosAvaliacaoJson: dadosAvaliacao,
+                    status: status
+            }
+        })
     }
 
     validaAvaliacaoCompleta(){
@@ -328,7 +439,7 @@ class FormularioAvaliacao extends React.Component{
                                                                                 >
                                                                                 </SelectMenu>
                                                                             
-
+                                                                                
                                                                                 <div className="form-check" data-bs-toggle="tooltip" data-bs-placement="right" title="Não é obrigatório inserir um comentário.">
                                                                                     <input className="form-check-input" 
                                                                                             type="checkbox"  
@@ -337,7 +448,7 @@ class FormularioAvaliacao extends React.Component{
                                                                                             onChange={e => this.handleCheck(e, eixo)}
                                                                                             disabled = {!this.state.subdimensoesState[eixo.id]}
                                                                                     />
-                                                                                    <label className="form-check-label" htmlFor={"selectEixo"+eixo.id}> <i>Comentário</i></label>
+                                                                                    <label className="form-check-label" htmlFor={"selectEixo"+eixo.id}> <i>Observações</i></label>
                                                                                 </div>
 
                                                                                 {this.state.mostrarTextComentarioState[eixo.id] && 
@@ -346,7 +457,7 @@ class FormularioAvaliacao extends React.Component{
                                                                                                     id={"textArea"+eixo.id} 
                                                                                                     rows="3"
                                                                                                     onChange={ e => this.handleChangeTextArea(e, eixo)}
-                                                                                                    value = {this.state.textAreaComentarioState[eixo.id]} 
+                                                                                                    value = {this.state.textAreaObservacaoState[eixo.id]} 
                                                                                                     
                                                                                         />
                                                                                     </div>

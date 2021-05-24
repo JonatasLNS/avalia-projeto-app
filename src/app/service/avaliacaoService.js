@@ -6,7 +6,22 @@ export default class AvaliacaoService extends ApiService {
         super('/api/avaliacoes')
     }
 
-    listarByProfessorId(id){
+    buscarAvaliacaoById(id){
         return this.get(`/${id}`)
+    }
+
+    salvar(listAvaliacao){
+        return this.post('/', listAvaliacao);
+    }
+
+    consultar(avaliacaoFiltro){
+  
+        let params = `/?`
+
+        if(avaliacaoFiltro.professorId){
+            params = `${params}&professorId=${avaliacaoFiltro.professorId}`
+        }
+
+        return this.get(params)
     }
 }

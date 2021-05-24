@@ -25,15 +25,18 @@ class Home extends React.Component{
         this.setState({ nomeUsuario: usuarioLogado.nome})
         this.setState({ idUsuario: usuarioLogado.id})
 
-        this.service.listarByProfessorId(usuarioLogado.id)
-            .then( resposta => {
+        const avaliacaoFiltro = {
+            professorId: usuarioLogado.id
+        }
 
-                this.setState({ avaliacoes :  resposta.data})
+        this.service.consultar(avaliacaoFiltro)
+        .then( resposta => {
+            this.setState({ avaliacoes :  resposta.data})
+            console.log(Array.from(resposta.data))
+        }).catch( error =>  {
+            console.log(error)
+        })
 
-                console.log(Array.from(resposta.data))
-            }).catch( error =>  {
-                console.log(error)
-            })
     }
 
     prepareCadastrarProjetos = () => {

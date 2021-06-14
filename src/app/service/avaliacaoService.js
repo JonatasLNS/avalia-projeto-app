@@ -22,6 +22,11 @@ export default class AvaliacaoService extends ApiService {
             params = `${params}&professorId=${avaliacaoFiltro.professorId}`
         }
 
+        if(avaliacaoFiltro.projetoId){
+            console.log(avaliacaoFiltro.projetoId)
+            params = `${params}&projetoId=${avaliacaoFiltro.projetoId}`
+        }
+
         return this.get(params)
     }
 }

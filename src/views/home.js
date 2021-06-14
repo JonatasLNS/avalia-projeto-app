@@ -32,7 +32,6 @@ class Home extends React.Component{
         this.service.consultar(avaliacaoFiltro)
         .then( resposta => {
             this.setState({ avaliacoes :  resposta.data})
-            console.log(Array.from(resposta.data))
         }).catch( error =>  {
             console.log(error)
         })
@@ -45,6 +44,10 @@ class Home extends React.Component{
 
     avaliar = (id) => {
         this.props.history.push(`/formulario-avaliacao/${id}`)
+    }
+
+    gerarRelatorio = (id) => {
+        this.props.history.push(`/gerar-relatorio/${id}`)
     }
 
 
@@ -73,7 +76,9 @@ class Home extends React.Component{
                             <div className="bs-component">
                                 <ProjetosTable 
                                     avaliacoes={this.state.avaliacoes}
-                                    avaliarAction={this.avaliar}>
+                                    avaliarAction={this.avaliar}
+                                    relatorioAction={this.gerarRelatorio}
+                                    usuarioLogado={this.state.idUsuario}>
                                 </ProjetosTable>
                             </div>
                         </div>  

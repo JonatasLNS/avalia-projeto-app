@@ -4,6 +4,7 @@ import Login from '../views/login'
 import CadastroUsuario from '../views/cadastroUsuario'
 import CadastroProjeto from '../views/cadastroProjeto'
 import FormularioAvaliacao from '../views/formularioAvaliacao'
+import RelatorioAvaliacao from '../views/relatorioAvaliacao'
 import Home from '../views/home'
 
 import { Route, Switch, HashRouter, Redirect } from 'react-router-dom'
@@ -18,6 +19,7 @@ function Rotas(){
                 <Route path="/cadastro-usuarios" component={CadastroUsuario} />
                 <Route path="/cadastro-projetos" component={CadastroProjeto} />
                 <Route path="/formulario-avaliacao/:id" component={FormularioAvaliacao} />
+                <Route path="/gerar-relatorio/:id" component={RelatorioAvaliacao} />
             </Switch>
         </HashRouter>
     )

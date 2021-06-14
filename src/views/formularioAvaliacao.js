@@ -14,6 +14,7 @@ import SelectMenu from '../components/selectMenu'
 import CardMensagem from '../components/cardMensagem'
 
 import { mensagemSucesso, mensagemErro, mensagemAlerta } from '../components/toastr'
+import { Chart } from 'primereact/chart'
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -24,6 +25,16 @@ class FormularioAvaliacao extends React.Component{
     constructor(){
         super();
         this.service = new AvaliacaoService();
+
+        this.lightOptions = {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#495057'
+                    }
+                }
+            }
+        };
     }
 
     state = {
@@ -38,6 +49,8 @@ class FormularioAvaliacao extends React.Component{
         mostrarTextComentarioState: [],
         textAreaObservacaoState: [],
         isCheckedState: [],
+        chartData:{},
+        isConcluida: false,
         listaOpcoes : [
             { label: 'Selecione...' , value: '' },
             { label: 'SIM - Este projeto está de acordo com este item.' , value: '1' },
@@ -190,11 +203,13 @@ class FormularioAvaliacao extends React.Component{
 
         this.service.buscarAvaliacaoById(params.id)
         .then( resposta => {
-            console.log(resposta.projeto)
+            
             this.setState({ 
                 avaliacao: resposta.data,
-                projeto: resposta.data.projeto,
-                aluno: resposta.data.projeto.aluno
+                projeto: resposta.data.projetoTransient,
+                aluno: resposta.data.projetoTransient.aluno,
+                isConcluida: resposta.data.status == "EFETIVADO"
+
             })
 
         }).catch( error =>  {
@@ -211,7 +226,16 @@ class FormularioAvaliacao extends React.Component{
                 dadosAvaliacao: resposta.data
             })
             
-            console.log(resposta.data)
+            let total = 0;
+
+            let countDeAcordo = 0;
+            let countNaoDeAcordo = 0;
+            let countParcialDeAcordo = 0;
+
+            let deAcordoPercent = 0;
+            let naoDeAcordoPercent = 0;
+            let parcialDeAcordoPercent = 0;
+
 
             resposta.data.map(itemAvaliacao => {
                 this.setState(update(this.state, {
@@ -237,7 +261,45 @@ class FormularioAvaliacao extends React.Component{
                     }
                     
                 }));
+
+                if(itemAvaliacao.valorSelect === 1){
+                    total++
+                    countDeAcordo++
+                }else if(itemAvaliacao.valorSelect === 2){
+                    total++
+                    countNaoDeAcordo++
+                }else if(itemAvaliacao.valorSelect === 3){
+                    total++
+                    countParcialDeAcordo++
+                }
+
             })
+
+            deAcordoPercent = Math.round((countDeAcordo * 100) / total)
+            naoDeAcordoPercent = Math.round((countNaoDeAcordo * 100) / total)
+            parcialDeAcordoPercent = Math.round((countParcialDeAcordo * 100) / total)
+
+            
+            this.setState({ 
+                chartData : {
+                    labels: ['Atingiu expectativas', 'Atingiu parcialmente as expectativas', 'Não atingiu as expectativas'],
+                    datasets: [
+                        {
+                            data: [deAcordoPercent, parcialDeAcordoPercent, naoDeAcordoPercent],
+                            backgroundColor: [
+                                "#18bc9c",
+                                "#FFCE56",
+                                "#FF6384"
+                            ],
+                            hoverBackgroundColor: [
+                                "#18bc9c",
+                                "#FFCE56",
+                                "#FF6384"
+                            ]
+                        }]
+                }
+            })
+
         }).catch( error =>  {
             console.log(error)
         })
@@ -390,14 +452,28 @@ class FormularioAvaliacao extends React.Component{
                                 <h6 className="card-title">{`Aluno: ${this.state.aluno.nome}`}</h6>
                                 <h6 className="card-subtitle text-muted">{`Curso: ${this.state.aluno.curso}`}</h6> <br />
                                 <h6 className="card-subtitle text-muted">{`Semestre: ${this.state.projeto.ano}.${this.state.projeto.semestre}`}</h6>
+                                
+                                {this.state.isConcluida && <br />}
+                                {this.state.isConcluida && <button type="button" class="btn btn-success">Avaliação Concluída</button>}
+                            </div>
+                        </div>
+
+                        <div className="card mb-12">
+                            <h5 className="card-header">Resumo da Avaliação:</h5>
+                            <div className="card-body p-jc-center">
+                                <div className="card p-d-flex p-jc-center ">
+                                    <Chart type="doughnut" data={this.state.chartData} options={this.lightOptions} style={{  width: '50%' }} />
+                                </div>
                             </div>
                         </div>
                         
                         {/* FORMULARIO DE AVALIAÇÃO */}
 
-                        <CardMensagem title="Avaliação:"
-                                      text="Utilize os campos abaixo para realizar a avaliação."
-                        ></CardMensagem>
+                        { !this.state.isConcluida && 
+                            <CardMensagem title="Avaliação:"
+                                        text="Utilize os campos abaixo para realizar a avaliação."
+                            ></CardMensagem>
+                        }
 
                         {/* Abas */}
                         <div className="row">
@@ -435,7 +511,8 @@ class FormularioAvaliacao extends React.Component{
                                                                                     className='form-control' 
                                                                                     lista={this.state.listaOpcoes}
                                                                                     onChange={ e => this.handleChangeDimensao(e, eixo)}
-                                                                                    value = {this.state.subdimensoesState[eixo.id]}    
+                                                                                    value = {this.state.subdimensoesState[eixo.id]} 
+                                                                                    disabled = {this.state.isConcluida}   
                                                                                 >
                                                                                 </SelectMenu>
                                                                             
@@ -446,7 +523,7 @@ class FormularioAvaliacao extends React.Component{
                                                                                             checked={this.state.isCheckedState[eixo.id]}
                                                                                             id={"selectEixo"+eixo.id} 
                                                                                             onChange={e => this.handleCheck(e, eixo)}
-                                                                                            disabled = {!this.state.subdimensoesState[eixo.id]}
+                                                                                            disabled = {(!this.state.subdimensoesState[eixo.id] || this.state.isConcluida)}
                                                                                     />
                                                                                     <label className="form-check-label" htmlFor={"selectEixo"+eixo.id}> <i>Observações</i></label>
                                                                                 </div>
@@ -458,6 +535,7 @@ class FormularioAvaliacao extends React.Component{
                                                                                                     rows="3"
                                                                                                     onChange={ e => this.handleChangeTextArea(e, eixo)}
                                                                                                     value = {this.state.textAreaObservacaoState[eixo.id]} 
+                                                                                                    disabled = {this.state.isConcluida}
                                                                                                     
                                                                                         />
                                                                                     </div>
@@ -483,9 +561,18 @@ class FormularioAvaliacao extends React.Component{
                         {/* BOTÕES */}
                         <div className="row justify-content-end">
                             <div className='form-group'>
-                                <div className="col-md-12 ms-auto">   
-                                        <button  type="button" className="btn btn-success mr-1" onClick={this.salvar}>Salvar</button>
-                                        <button  type="button" className="btn btn-danger"       onClick={this.cancelar}>Cancelar</button>
+                                <div className="col-md-12 ms-auto">  
+                                        { !this.state.isConcluida && 
+                                            <button  type="button" className="btn btn-success mr-1" onClick={this.salvar}>Salvar</button>
+                                            
+                                        } 
+                                        { !this.state.isConcluida && 
+                                            <button  type="button" className="btn btn-danger" onClick={this.cancelar}>Cancelar</button>
+                                        } 
+                                        { this.state.isConcluida && 
+                                            <button  type="button" className="btn btn-danger"  onClick={this.cancelar}>Voltar</button>
+                                        } 
+                                        
                                 </div>
                             </div>    
                         </div>

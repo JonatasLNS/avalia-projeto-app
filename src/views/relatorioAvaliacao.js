@@ -36,7 +36,7 @@ class FormularioAvaliacao extends React.Component{
             }
         };
 
-        this.basicOptions1 = {
+        this.basicOptions = {
             maintainAspectRatio: false,
             aspectRatio: .8,
             plugins: {
@@ -65,30 +65,6 @@ class FormularioAvaliacao extends React.Component{
                 }
             }
         };
-
-        
-       /* this.chartData = {
-            labels: ['A', 'B', 'C'],
-            datasets: [
-                {
-                    data: [300, 50, 100],
-                    backgroundColor: [
-                        "#FF6384",
-                        "#36A2EB",
-                        "#FFCE56"
-                    ],
-                    hoverBackgroundColor: [
-                        "#FF6384",
-                        "#36A2EB",
-                        "#FFCE56"
-                    ]
-                }]
-        };*/
-
-        
-
-
-
         
     }
 
@@ -164,12 +140,12 @@ class FormularioAvaliacao extends React.Component{
                             backgroundColor: [
                                 "#18bc9c",
                                 "#FFCE56",
-                                "#FF6384"
+                                "#FF6347"
                             ],
                             hoverBackgroundColor: [
-                                "#18bc9c",
-                                "#FFCE56",
-                                "#FF6384"
+                                "#66CDAA",
+                                "#F0E68C",
+                                "#FF7F50"
                             ]
                         }]
                 }
@@ -188,8 +164,6 @@ class FormularioAvaliacao extends React.Component{
                 .then( resposta => {
 
                     let total = 0;
-
-                    let totalProjeto = resposta.data.length;
 
                     let countDeAcordo = 0;
                     let countNaoDeAcordo = 0;
@@ -247,13 +221,13 @@ class FormularioAvaliacao extends React.Component{
                                 },
                                 {
                                     label: 'Atingiu parcialmente as expectativas',
-                                    backgroundColor: '#f39c12',
+                                    backgroundColor: '#FFCE56',
                                     data: listaParcialDeAcordoPercent
                                 }
                                 ,
                                 {
                                     label: 'Não atingiu as expectativas',
-                                    backgroundColor: '#dc3545',
+                                    backgroundColor: '#FF6347',
                                     data: listaNaoDeAcordoPercent
                                 }
                             ]
@@ -321,7 +295,7 @@ class FormularioAvaliacao extends React.Component{
                         <div className="card mb-3">
                             <h5 className="card-header">Resumo das Avaliações:</h5>
                             <div className="card-body">
-                                <Chart type="bar" data={this.state.basicDataGrafico } options={this.basicOptions1} />
+                                <Chart type="bar" data={this.state.basicDataGrafico } options={this.basicOptions} />
                             </div>
                         </div>
 

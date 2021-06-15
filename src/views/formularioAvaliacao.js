@@ -289,12 +289,12 @@ class FormularioAvaliacao extends React.Component{
                             backgroundColor: [
                                 "#18bc9c",
                                 "#FFCE56",
-                                "#FF6384"
+                                "#FF6347"
                             ],
                             hoverBackgroundColor: [
-                                "#18bc9c",
-                                "#FFCE56",
-                                "#FF6384"
+                                "#66CDAA",
+                                "#F0E68C",
+                                "#FF7F50"
                             ]
                         }]
                 }
@@ -336,7 +336,7 @@ class FormularioAvaliacao extends React.Component{
     }
 
     handleChangeDimensao = (e, eixo) => {
-   
+
         this.setState(update(this.state, {
             subdimensoesState: {
                 [eixo.id]: {
@@ -361,6 +361,10 @@ class FormularioAvaliacao extends React.Component{
 
     cancelar = () => {
         this.confirmCancel()
+    }
+
+    voltar = () => {
+        this.props.history.push('/home')
     }
 
     salvar = () => {
@@ -458,14 +462,16 @@ class FormularioAvaliacao extends React.Component{
                             </div>
                         </div>
 
-                        <div className="card mb-12">
-                            <h5 className="card-header">Resumo da Avaliação:</h5>
-                            <div className="card-body p-jc-center">
-                                <div className="card p-d-flex p-jc-center ">
-                                    <Chart type="doughnut" data={this.state.chartData} options={this.lightOptions} style={{  width: '50%' }} />
+                        {this.state.isConcluida && 
+                            <div className="card mb-12">
+                                <h5 className="card-header">Resumo da Avaliação:</h5>
+                                <div className="card-body p-jc-center">
+                                    <div className="card p-d-flex p-jc-center ">
+                                        <Chart type="doughnut" data={this.state.chartData} options={this.lightOptions} style={{  width: '50%' }} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
                         
                         {/* FORMULARIO DE AVALIAÇÃO */}
 
@@ -528,7 +534,7 @@ class FormularioAvaliacao extends React.Component{
                                                                                     <label className="form-check-label" htmlFor={"selectEixo"+eixo.id}> <i>Observações</i></label>
                                                                                 </div>
 
-                                                                                {this.state.mostrarTextComentarioState[eixo.id] && 
+                                                                                {(this.state.mostrarTextComentarioState[eixo.id] && this.state.subdimensoesState[eixo.id] ) && 
                                                                                     <div class="mb-3">
                                                                                         <textarea class="form-control" 
                                                                                                     id={"textArea"+eixo.id} 
@@ -570,7 +576,7 @@ class FormularioAvaliacao extends React.Component{
                                             <button  type="button" className="btn btn-danger" onClick={this.cancelar}>Cancelar</button>
                                         } 
                                         { this.state.isConcluida && 
-                                            <button  type="button" className="btn btn-danger"  onClick={this.cancelar}>Voltar</button>
+                                            <button  type="button" className="btn btn-danger"  onClick={this.voltar}>Voltar</button>
                                         } 
                                         
                                 </div>

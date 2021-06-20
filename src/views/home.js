@@ -63,7 +63,6 @@ class Home extends React.Component{
                     <p className="lead">
                     <fieldset>
                         <button onClick={this.prepareCadastrarProjetos} className="btn btn-primary btn-lg mr-1">Cadastrar Novo Projeto de Pesquisa</button>
-                        <button onClick={""} className="btn btn-danger btn-lg">Relatório Avaliações</button>
                     </fieldset>
                         
                     </p>
